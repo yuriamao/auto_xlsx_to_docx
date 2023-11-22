@@ -4,7 +4,7 @@ from docx import Document
 from docx.shared import Pt
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-
+from code.utils import *
 
 
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']  # 设置一个支持中文的字体，比如 Arial Unicode MS
@@ -92,7 +92,8 @@ def generate_report(date,img):
     total_val = local_val + foreign_val
     # 输出一段文字
     if not total_data.empty:
-        output_text = f"{date[:4]}年{date[4:6]}月，北京市信息软件业招聘岗位数{total_val}个，其中本地{local_val}个，外地{foreign_val}个。"     
+        output_text = f"{date[:4]}年{date[4:6]}月，北京市信息软件业招聘岗位数{total_val}个，其中本地{local_val}个，外地{foreign_val}个。"    
+        time_year= f"（{date[:4]}年{date[4:6]}月）"
     else:
         output_text = "暂无数据。"
     # 按集团系名称进行聚合
@@ -141,20 +142,36 @@ def generate_report(date,img):
     # 在 Word 文档中添加段落，包含输出文字
     # 插入图片
     image_path = img  # 图片路径
+
     doc.add_picture(image_path)  # 插入图片并设置宽度（可选）
     doc.add_paragraph(output_text)
     doc.add_paragraph(par)
 
+    # 实例化 WordReportGenerator 类
+    word_generator = WordReportGenerator()
+
+    # 使用类方法创建文件
+    word_generator.job_docx_file(title0='信息软件业招聘岗位数分析报告',
+                             title1='',
+                             par1=output_text,
+                             pars=par,
+                             file_pre='信息软件业招聘岗位数分析报告',
+                             pic_dir='/Users/harvin/code/自动报告产品开发-产业链@20220830/data/chart_2022_nov.png',
+                             file_dir='test',
+                             year_month=time_year
+                             )
+
+
     # 添加其他内容到文档...
 
     # 保存 Word 文档
-    doc.save(f'/Users/harvin/code/自动报告产品开发-产业链@20220830/data/output/招聘统计信息_{date}.docx')
+    # doc.save(f'/Users/harvin/code/自动报告产品开发-产业链@20220830/data/output/招聘统计信息_{date}.docx')
 
 
 
 def main():
     data_path = '/Users/harvin/code/自动报告产品开发-产业链@20220830/data/pmi_config.xlsx'
-    output_image_path = '/Users/harvin/code/自动报告产品开发-产业链@20220830/data/chart_job.png'
+    output_image_path = '/Users/harvin/code/自动报告产品开发-产业链@20220830/data/chart_2022_nov.png'
     for i in tqdm(range(7,13)):
         generate_monthly_chart(data_path, output_image_path, start_year=2022, start_month=6)
         if i <10:
