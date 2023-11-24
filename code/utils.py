@@ -6,6 +6,7 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 import os
 import datetime
+from io import BytesIO
 
 class WordReportGenerator:
     def __init__(self):
@@ -60,10 +61,13 @@ class WordReportGenerator:
             ti.paragraph_format.line_spacing = Pt(36)
             ti1 = ti.add_run(title)
             ti1.font.size = Pt(16)
-            ti1.font.name = 'Times New Roman'
+            ti1.font.name = u'Times New Roman'
             r = ti1._element
             r.rPr.rFonts.set(qn('w:eastAsia'), '仿宋')
-            ti.paragraph_format.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE
+            ti2 = ti.add_run('\n')
+            ti.paragraph_format.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE # 1.5倍行距
+            ti.paragraph_format.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE # 1.5倍行距
+
     # 一级标题设置
     def title1(self, txt):
         if txt:
@@ -98,7 +102,7 @@ class WordReportGenerator:
             ti.paragraph_format.first_line_indent = ti.style.font.size * 2 # 缩进2字符
             ti.paragraph_format.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE # 1.5倍行距
 
-    # 单一段落格式设置
+    # 单一段落格式设置 
     def one_paragraph_txt(self, txt):
         if txt:
             txt1 = txt.split("，")[0]
@@ -118,10 +122,11 @@ class WordReportGenerator:
             p2.font.size = Pt(16)
             p.paragraph_format.first_line_indent = p.style.font.size * 2 # 缩进2字符
             p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE # 1.5倍行距
-    # 格式化段落（无特殊格式，只有大小和罗马字符）
+    # 格式化段落（无特殊格式，只有大小和罗马字符）JUSTIFY
     def standard_paragraph_txt(self, txt):
         if txt:
             p = self.document.add_paragraph()
+            p.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
             p.paragraph_format.space_before = Pt(0)
             p.paragraph_format.space_after = Pt(0)
             p.paragraph_format.line_spacing = Pt(36)
@@ -175,10 +180,6 @@ class WordReportGenerator:
         table = self.document.add_table(rows=1, cols=len(dataframe.columns))
         table.style = 'Table Grid'
         table.autofit = True  # 自适应内容宽度
-
-
-        
-
         # 添加表头
         hdr_cells = table.rows[0].cells
         for i, column_name in enumerate(dataframe.columns):
@@ -254,26 +255,68 @@ class WordReportGenerator:
         self.little_title(table_title)
         self.add_table_from_dataframe(df_table)
         file_name=f'{file_pre}{year_month}.docx'
-        file_path = f'/Users/harvin/code/自动报告产品开发-产业链@20220830/data/output/{file_dir}/{file_name}'
+        file_path = f'/Users/harvin/code/自动报告产品开发-产业链@20220830/data/output/{file_dir}/{file_pre}/{file_name}'
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
         self.document.save(file_path)
         print(file_path)
 
 
+    def job_salary_docx_file(self,title0,pic_title,par1,file_pre,file_dir,pic_dir,year_month):
+        self.title0(title0)
+        self.time_note(year_month)
+        self.standard_paragraph_txt(par1)
+        self.add_image_to_docx(pic_dir)
+        self.little_title(pic_title)
 
+        file_name=f'{file_pre}{year_month}.docx'
+        file_path = f'/Users/harvin/code/自动报告产品开发-产业链@20220830/data/output/{file_dir}/{file_pre}/{file_name}'
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        self.document.save(file_path)
+        print(file_path)
 
-# Example usage:
-# 创建一个示例字符串，模拟您的数据输入
-data_input = """
-time_note
-这是第一个段落。
-这是第二个标题
-这是第二个段落。
-"""
+    def ie_fina_docx_file(self,title0,par1,par2,par3,pic_dir,pic_dir2,pic_dir3,file_pre,file_dir,year_month,lt,lt2,lt3):
+        self.title0(title0)
+        self.time_note(year_month)
+        self.standard_paragraph_txt(par1)
+        
+        self.standard_paragraph_txt(par2)
+        self.add_image_to_docx(pic_dir2)
+        self.little_title(lt2)
+        
+        self.standard_paragraph_txt(par3)
+        self.add_image_to_docx(pic_dir)
+        self.little_title(lt)
+        self.add_image_to_docx(pic_dir3)
+        self.little_title(lt3)
+        
 
-# 实例化 WordReportGenerator 类
-word_generator = WordReportGenerator()
+        file_name=f'{file_pre}{year_month}.docx'
+        file_path = f'/Users/harvin/code/自动报告产品开发-产业链@20220830/data/output/{file_dir}/{file_pre}/{file_name}'
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        self.document.save(file_path)
+        print(file_path)
 
-# 使用类方法创建文件
-word_generator.create_file(date_str='2023-11-22', data=data_input, data_dim=None)
+def longest_common_substring(s1, s2):
+    # 基于最大重复子串匹配
+    m = [[0] * (1 + len(s2)) for _ in range(1 + len(s1))]
+    longest, x_longest = 0, 0
+    for x in range(1, 1 + len(s1)):
+        for y in range(1, 1 + len(s2)):
+            if s1[x - 1] == s2[y - 1]:
+                m[x][y] = m[x - 1][y - 1] + 1
+                if m[x][y] > longest:
+                    longest = m[x][y]
+                    x_longest = x
+            else:
+                m[x][y] = 0
+    return s1[x_longest - longest: x_longest]
+
+def get_best_match(name, ordered_names):
+    max_common_substring = 0
+    best_match = None
+    for ordered_name in ordered_names:
+        common_substring = longest_common_substring(name, ordered_name)
+        if len(common_substring) > max_common_substring:
+            max_common_substring = len(common_substring)
+            best_match = ordered_name
+    return best_match
