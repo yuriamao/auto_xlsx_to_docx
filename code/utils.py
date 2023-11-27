@@ -147,6 +147,21 @@ class WordReportGenerator:
         for txt in txt_list:
             self.one_paragraph_txt(txt)
 
+    def much_par_and_pic_and_little_tile(self,txt_par_list,pic_dir_list,txt_little_list):
+        for i,txt in enumerate(txt_par_list):
+            self.standard_paragraph_txt(txt)
+            self.add_image_to_docx(pic_dir_list[i])
+            self.little_title(txt_little_list[i])
+
+
+    def much_title_par_and_pic_and_little_tile(self,title_list,txt_par_list,pic_dir_list,little_list):
+            for i,txt in enumerate(txt_par_list):
+                self.title1(title_list[i])
+                self.standard_paragraph_txt(txt)
+                self.add_image_to_docx(pic_dir_list[i])
+                self.little_title(little_list[i])
+        
+
     def create_element(self, name):
         return OxmlElement(name)
 
@@ -274,6 +289,23 @@ class WordReportGenerator:
         self.document.save(file_path)
         print(file_path)
 
+    def bingo_docx_file(self,title0,year_month,par1,par2,pic_dir1,pic_dir2,lt1,lt2,file_pre,file_dir):
+        self.title0(title0)
+        self.time_note(year_month)
+        self.standard_paragraph_txt(par1) 
+        self.standard_paragraph_txt(par2)
+
+        self.add_image_to_docx(pic_dir1)
+        self.little_title(lt1)
+        self.add_image_to_docx(pic_dir2)
+        self.little_title(lt2)
+
+        file_name=f'{file_pre}{year_month}.docx'
+        file_path = f'/Users/harvin/code/自动报告产品开发-产业链@20220830/data/output/{file_dir}/{file_pre}/{file_name}'
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        self.document.save(file_path)
+        print(file_path)
+
     def ie_fina_docx_file(self,title0,par1,par2,par3,pic_dir,pic_dir2,pic_dir3,file_pre,file_dir,year_month,lt,lt2,lt3):
         self.title0(title0)
         self.time_note(year_month)
@@ -288,6 +320,35 @@ class WordReportGenerator:
         self.little_title(lt)
         self.add_image_to_docx(pic_dir3)
         self.little_title(lt3)
+        
+
+        file_name=f'{file_pre}{year_month}.docx'
+        file_path = f'/Users/harvin/code/自动报告产品开发-产业链@20220830/data/output/{file_dir}/{file_pre}/{file_name}'
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        self.document.save(file_path)
+        print(file_path)
+
+
+    def top_job_docx_file(self,file_dir,file_pre,title0,year_month,txt_par_list,pic_dir_list,little_list):
+        self.title0(title0)
+        self.time_note(year_month)
+        # self.standard_paragraph_txt(par1)
+
+        self.much_par_and_pic_and_little_tile(txt_par_list,pic_dir_list,little_list)
+        
+
+        file_name=f'{file_pre}{year_month}.docx'
+        file_path = f'/Users/harvin/code/自动报告产品开发-产业链@20220830/data/output/{file_dir}/{file_pre}/{file_name}'
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        self.document.save(file_path)
+        print(file_path)
+
+    def fina_bodong_docx_file(self,file_dir,file_pre,title0,year_month,title_list,txt_par_list,pic_dir_list,little_list):
+        self.title0(title0)
+        self.time_note(year_month)
+        # self.standard_paragraph_txt(par1)
+
+        self.much_title_par_and_pic_and_little_tile(title_list,txt_par_list,pic_dir_list,little_list)
         
 
         file_name=f'{file_pre}{year_month}.docx'
